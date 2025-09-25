@@ -1,0 +1,13 @@
+[project]
+name = "agentic-patterns"
+version = "0.1.0"
+description = "agentic patterns"
+
+requires-python = ">=3.10"  # Versão mínima do Python
+dependencies = [
+
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"

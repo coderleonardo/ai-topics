@@ -7,6 +7,8 @@ This is part of the **Agentic Patterns Series** from [*The Neural Maze*](https:/
 1. [Reflection Pattern: When Agents think twice](https://theneuralmaze.substack.com/p/reflection-pattern-agents-that-think)
     - [Andrew Ng Notes](https://www.deeplearning.ai/the-batch/how-agents-can-improve-llm-performance/?ref=dl-staging-website.ghost.io)
 
+2. [Agent Tools: The bridge to the outside world](https://theneuralmaze.substack.com/p/agent-tools-the-bridge-to-the-outside)
+
 The framework here is inspired by two fundamental concepts from CrewAI: **Crew** and **Agent**.
 
 - **Crew**: A Crew is a collaborative group of agents working together to accomplish a set of tasks.  

@@ -1,0 +1,95 @@
+In the previous videos, we explored words and token embedding techniques,
+but with limited contextual capabilities.
+In this video, we will explore how you can
+encode and decode context with attention.
+Word2Vec create static embeddings.
+The same embedding is generated for the words "bank", regardless of the context.
+"Bank" can refer to both a financial bank as well as the bank of a river.
+Its meaning, and therefore its embedding should change depending on the context.
+Capturing the text context is important to perform
+some language tasks, such as translation.
+A step in encoding this text was achieved through
+recurrent neural networks or RNNs.
+These are variants of neural networks
+that can model sequences as an additional input.
+To do so, these RNNs are used for two tasks, encoding or representing
+an input sentence, and decoding, or generating an output sentence.
+Let's explore this by showcasing how this input sentence
+"I love llamas" gets translated to Dutch.
+The text is passed to the encoder,
+which attempts to represent the entire sequence through embeddings.
+The decoder then
+uses those embeddings to generate language.
+Here it translated the English "I love llamas"
+to the Dutch "Ik hou van lama's."
+Each step in this architecture is autoregressive.
+When generating the next words, this architecture
+needs to consume all previously generated words.
+For instance, you take the input "I love Llamas",
+the model then generates the first token,
+which "Ik", to then generate the next token,
+the output "Ik" is appended to the inputs.
+In step two, the input is
+now "I love llamas ik" , which in turn generates the output 'hou'
+You can continue this process at each step
+and continuously update the inputs with the previously generated token.
+Until the entire output is generated.
+Most models are autoregressive
+and will therefore generate a single token each time.
+Let's explore this
+encoding and decoding in a bit more detail.
+You again start with the input sentence.
+"I love llamas" tokenized into tokens.
+We can use Word2Vec to create the embeddings as the inputs.
+Although these embeddings are static by themselves,
+the encoder processes the entire sequence in one go
+and takes into account the context of the embeddings.
+The encoding step aims
+to represent the input as well as possible,
+and generates the context in the form of an embedding.
+This decoder in turn is in charge of generating language,
+and does so by leveraging the previously generated context embedding
+to eventually generate the outputs.
+As we explored previously, these output tokens
+are generated one at a time, which is called autoregressive.
+This context embedding, however, makes it difficult to deal with longer sentences,
+since it is merely a single embedding representing the entire input.
+So the single embedding might fail to capture the entire context
+of a long and a complex sequence.
+In 2014, a solution called attention was introduced
+that highly improved upon the original architecture.
+Attention allows the model to focus on parts of the input sequence
+that are relevant to one another, or attend to each other and amplify
+their signal.
+Attention selectively determines which words are most important
+in a given sentence.
+Take our
+inputs and outputs sequences, for example.
+Words with similar meaning like I and the Dutch Ik, which are synonyms,
+have higher attention weights since they are more related.
+I and llamas have lower attention weights
+since they do not relate much to each other in this particular sentence.
+And the same applies to all other words.
+By adding these attention mechanisms to the decoder step,
+the RNN can generate signals for each input word in the sequence
+related to the potential outputs.
+You can again represent the input using Word2Vec
+embeddings and pass those to the encoder.
+Instead of passing only a context embedding to the decoder,
+the hidden states of all input words are passed to the decoder.
+A stateful word is an internal vector from a hidden layer
+of an RNN that contains the information about the previous words.
+The decoder then uses the attention mechanism to look at the entire sequence.
+Finally, this
+again generates the language. Due to this attention mechanism,
+the output tends to be much better since you now look
+at the entire sequence using embeddings for each token or words
+instead of the smaller and more limited context embedding.
+So during generation,
+the model attends to the most relevant inputs.
+After having generated "Ik hou van" from using the inputs "I love llamas",
+the attention mechanism then highlights words
+that are more relevant in this particular example.
+The sequential nature of this architecture precludes parallelization
+during training of the model.
+Let's go to the next video and learn how attention is used in transformer models.

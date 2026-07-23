@@ -1,0 +1,181 @@
+Self-attention is a key component in the transformer block.
+You've learned that it consists of two steps:
+relevance scoring and then combining information.
+You'll now take a closer look at how those are calculated
+and how that has evolved in recent years to enable more efficient attention.
+Let's dive in.
+So by now, you know that self-attention breaks down into two high-level steps.
+Relevant scoring.
+And then combining information.
+Let's look at those at more detail.
+Self-attention happens within what we call an attention head.
+So let's assume we only have one of these attention heads right now
+that we're using to process self-attention.
+We have the token that we're currently processing.
+And then we have the other positions in the sequence.
+So these are the vector representations of the other tokens that
+precede this token.
+Self-attention is conducted
+using three matrices the query projection matrix,
+the key projection matrix, and the value projection matrix.
+For transformers, the queries, keys, and values are important concepts.
+In this calculation,
+you'll get a sense of what each of them is used for.
+These weight matrices are used to calculate query key
+and value matrices.
+And through some interaction that we'll discuss in the next coming slides,
+we can go about scoring the relevance and then combining the information.
+So let's say on the query side here
+we have this query that represents the current position.
+And then this matrix that say each row here
+represents one of the other tokens in the series.
+And the same thing is done with keys and values.
+Each row is a vector representing one position in the sequence
+The end goal of relevance scoring is something like this.
+Every token that we have, any score assigned to them telling us
+how relevant this token is to the token we're currently representing.
+In this case, let's say we have 'the dog' that has the highest relevance scoring.
+And so more of those the representations of the tokens
+the and the dog will be baked into the enriched vector here towards the end.
+But this is the end of relevance scoring.
+Giving us these scores and they add up to 100.
+Now technically how this is done is by matrix multiplication.
+We multiply the queries vector associated with the current token
+by the keys vectors that represent of the previous tokens.
+This is a high level intuition,
+but if you want to know more about how attention is calculated
+and implemented, DeepLearning.AI has a short course that is entirely
+devoted to the calculation and implementation of attention.
+You can see that on the screen.
+If you want to dive into more details.
+I highly recommend that.
+Joshua Starmer is incredible and I love Stack Quest.
+And then now that we have the relevant scores, we can start with the second step,
+which is combining information from the relevant tokens that is done
+using the values vectors associated with each of these tokens.
+So each token has a values vector associated with it.
+We just multiply the score of each token by the vector value.
+And that gives us with these weighted values where the dog
+would have the highest value.
+And then these will be closer to zero because we're multiplying them
+by smaller numbers.
+And then once we have our weighted values we just sum them up.
+And then that is the output of this second information combination step.
+As we've mentioned, that calculation happens within
+an attention head.
+But in self-attention The same operation happens
+in parallel in multiple attention heads.
+Each attention head has its own set of keys,
+queries and values, weight matrices, and so the attention
+that we assign to the various vectors is different.
+So we can think about two components of self-attention
+before splitting into attention heads.
+There's this step of splitting that information into the attention heads.
+And then we have a step of combining that information from all of the attention
+heads and back together to form this, this output, of the self-attention layer.
+It's also important to visualize those keys, queries and value matrices.
+So we've said that each one of these attention had has its own set
+of projection matrices for keys, queries and values.
+And now that you have that visual, we can talk about more recent forms
+of attention, that power the current generation of
+transformer large language models.
+To make self-attention
+more efficient,
+because this is usually one of the steps that takes the longest and requires
+the most computational time in transformers.
+So one idea that was proposed to make attention more efficient
+is this idea of multi-query attention.
+And the idea here
+is that not each attention head has its own keys and values.
+But no, let's have them all share the same keys matrix and values matrix.
+So you only have one for the entire layer one set of these two projection weights
+matrices.
+You can think of this as some sort of compression.
+So we have a smaller number of parameters to to calculate all of this.
+And this helps models be faster when they calculate self-attention.
+More recently grouped query attention is a efficient
+attention mechanism that allows us to use
+multiple keys and values, not the same number of attention heads.
+It's a smaller, lower number than what we refer to here as number of groups.
+And this leads to better results than when we just shared one
+set of keys and values matrices.
+This is especially important with larger models that required
+more of those parameters to represent the data that is required
+to really do self-attention on very large sets of training data.
+And so now when you read papers that describe the architecture
+of the model that they trained, you will find if they use
+multi-query attention, they will mention how many attention has that they use,
+but also how many groups of keys and values that they use.
+Another important recent idea for improving
+the efficiency of attention is this idea of sparse attention.
+And this usually happens not in all layers.
+So let's say the first layer has self-attention
+in the way that we've just discussed where token number seven, as we're processing
+it, is able to attend to all of the tokens that preceded it.
+In larger and larger models, that becomes a little bit too expensive
+if you allow that to happen at every layer.
+So you start to see that maybe interleaved.
+So layer two and layer four and layer six for example, are not able to attend
+back to all of the tokens in the history, but maybe to the last
+4 or 16 or 32.
+This is an idea that's called sparse attention.
+One way to think about it, if we're to set up some visual language,
+let's say we have the token, "the", we're processing it now,
+so we can't really attend to any previous tokens.
+But let's say the second token is dog.
+So dog can attend to both the and the dog.
+And then we have "chased", the third
+token and that, that is able to attend to a three tokens.
+Right? So we have chased it tends to dog.
+And now this is just to set up the visual language for figures
+like this, that describe what sparse attention looks like.
+So this is full attention where every token can attend
+to every previous token.
+So you can think of each row as a as a step processing.
+Maybe we generated this token.
+And then when we've generated it where do we attend to.
+But sparse attention can be like this.
+This is strided where at every position
+you can look back at last 3 or 4, but then you can also maybe look at
+specific positions.
+So you can look at position number one.
+And and for here four example. And then another idea of sparse attention
+is this idea of a fixed where there are these fixed positions
+in the context sequence that, you know, after you reach token number four,
+you're only allowed to look at the tokens
+from four until the current position.
+This is a figure from this paper
+generating long sequences with sparse transformers.
+That goes a little bit into more detail about how these methods, work.
+More recently, and to allow these models to go through
+100,000 or 1 million token context sizes are ideas like ring attention.
+And for that, I'd highly recommend you check out this, blog post.
+Ring attention explained that goes through a highly visual
+and animated explanation of, the ring attention and how it works.
+Congratulations for making it this far.
+Now that you've seen all of this visual language,
+when you are reading a paper like this, this is the most recent
+at the time of recording, paper by Meta for the Llama 3.1 models.
+When you go to the architecture section, you should by now have the visual language
+to think through all of these parameters
+that describe the architecture of the model.
+And so when you look at tables like this,
+you know what each of these components look like.
+If we take an example and look at this 8B model, you can see that it has 32 layers.
+Which can look like this.
+So this is a set of how many transformer blocks that it has.
+It has 4000 model dimension.
+That is the dimension length of the vector that flows through the transformer.
+You see that the feedforward neural network has a dimension of 14,000.
+That is how many units are in
+this part of the feedforward neural network.
+You see that it has 32 attention heads.
+And you know what those are.
+And you see that it's using grouped query attention with eight key value heads.
+And that's the number of groups.
+You also see that it has
+a vocabulary of 128,000.
+And you know how that is represented inside of the tokenizer
+and the associated embeddings matrix inside of the model.
+And you can see that it uses rope for positional embeddings.
+This is a method called rotary embeddings that we'll talk about in the next lesson.

@@ -1,0 +1,121 @@
+In our previous video, we explored the main techniques of attention.
+In this lesson, you will explore how this technique was further developed
+and to this day still powers many large language models.
+The true power of attention,
+and what drives the amazing abilities of most large language models,
+was first explored in The Attention is All you need paper.
+This paper introduces the Transformer's architecture,
+which is based solely on attention without the recurrent neural network.
+This architecture allows the model to be trained in parallel,
+which speeds up calculation significantly compared to the RNN
+based model, which precludes parallelization.
+Let's explore how this transformer works.
+Assume you have the same input and output sequences as before.
+The transformer consists of stacked encoder and decoder blocks.
+These blocks all have the same attention mechanism that you saw previously,
+and by stacking these blocks, you amplify the strength of the encoder and decoders.
+Let's take a closer look at the encoder.
+The input "I love Llamas" is converted to embeddings,
+but instead of Word2Vec embeddings, we start with random values.
+Then self-attention, which is attention focused on
+only the input, processes these embeddings and updates them.
+These updated embeddings contain more contextualized information
+as a result of the intention mechanism.
+They are passed to a feedforward neural network,
+which is a similar network that we explored before.
+To finally create contextualized
+token word embeddings. Remember that the encoder is meant for representing text
+and does a good job of generating embeddings.
+Self-attention is an attention mechanism, and instead of processing two separate
+sequences, it processes only one sequence
+the inputs, by comparing it to itself.
+Now, after the encoders are done
+processing the information, the next step is for the decoder.
+The decoder can take any
+previously generated words and pass it to the masked self-attention,
+similar to the encoder to process these embeddings.
+Intermediate embeddings are generated and passed
+to another attention network together with the embeddings of the encoder,
+thus processing both what has been generated and what you already have.
+This output is passed to a neural network
+and finally generates the next word in the sequence.
+Mask self-attention is similar
+to self-attention, but removes all values from the upper diagonal.
+Therefore, it masks future positions
+so that any given token can only attend to tokens that came before it.
+That helps leaking information when generating the output.
+The original transformer model
+is an encoder-decoder architecture that serves translation tasks well,
+but cannot easily be used for other tasks like text classification.
+In 2018,
+a new architecture called Bidirectional Encoder
+Representations from Transformers or BERT was introduced
+that could be leveraged for wide variety of tasks.
+BERT is an encoder only architecture that focuses
+on representing language and generating contextual word embeddings.
+These encoder blocks are the same as we saw before
+self-attention floats by neural networks.
+The input contains an additional token.
+The CLS or classification token,
+which is used as a representation for the entire input.
+Often we use this CLS token as the input embedding for fine
+tuning the model on specific tasks like classification.
+To train a BERT-like model,
+you can use a technique called masked language modeling.
+You first randomly mask a number of words from your input sequence
+and have the model predict these masked words.
+By doing so, the model learns to represent language
+as it attempts to deconstruct these masked words.
+Training is typically a two-step approach.
+First, you apply masked language modeling on
+large amounts of data, and this is called pre-training.
+After which you can fine-tune your pre-trained model
+on a number of downstream tasks, including classification.
+Generative models, in contrast,
+use a different architecture.
+Assume that you again have another input sequence
+and randomly initialized embeddings.
+The input is then passed to the decoder only,
+as generative models tend to only stack decoders.
+One of the first implementations is called GPT or GPT-1.
+It stands for Generative Pre-Trained transformer
+as it uses the deep transformer decoder.
+A decoder block uses again masked
+self-attention, which is then passed to a neural network.
+Note that it does not use any encoders as we explored previously.
+And finally, the next word is generated.
+These are the two flavors that you will see most often generative
+models like ChatGPT, and representation models
+like embedding models.
+These models have something in
+common called the context length.
+You start from an input sequence.
+Tell me something about llamas that we ask of the generative model
+in this example.
+Now let's say that you already generated some tokens previously.
+The original query, together with the previously
+generated tokens, represent the current context length.
+That is, the amount of tokens that are currently being processed.
+In contrast, a generative LLM like GPT one or even a representation
+model can have a maximum context length, for example, 512.
+That means that the model can only process 512 tokens at a given time.
+Note that this also includes
+the tokens that are being generated as they update the current context
+length.
+These generative models
+do the large and large language models justice.
+GPT-1 already had more than 100 million parameters.
+The next version, GPT-2, with over 1 billion parameters,
+and GPT-3 with already 175 billion parameters.
+As the number of parameters grew, so did their capabilities.
+That is why you will often see such large models.
+Looking back at a year that we playfully called a year of generative AI.
+It all started with the well-known ChatGPT model
+or more accurately, GPT 3.5.
+Following the success of Chat GPT,
+many other proprietary models soon followed.
+Fortunately, open-source models followed quickly.
+These are models that have their weights publicly available for us to use.
+Some of them can even be freely used for commercial purposes.
+Let's go to the
+next lesson and learn about tokens and embeddings.

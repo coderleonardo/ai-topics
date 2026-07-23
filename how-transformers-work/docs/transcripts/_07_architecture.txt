@@ -1,0 +1,107 @@
+So far you have
+learned how language is represented numerically
+and how words are converted into tokens and dense embeddings.
+Now you're ready to dive into the details of the transformer.
+When we're thinking about transformer large
+language models, we know that there's an input prompt to the model.
+And then there's a generation where an output text that the model generates.
+Now one of the first important intuitions,
+to get the force of understanding how the transformer works
+is to understand that it generates tokens one by one.
+So to generate that output that we saw in the previous one, you can see that
+the model is generating them one token at a time.
+And we'll break down these generation steps.
+So you can understand the underlying mechanisms of how this works.
+The transformer is made up of three major components.
+We've already looked at one in the previous lessons.
+So we've looked at the tokenizer.
+That is the component that breaks down the text into multiple chunks.
+And then the output of that tokenizer goes to a stack of transformer blocks.
+This is where the majority or the vast majority of computing is.
+This is the neural networks,
+that operate on this and do pretty much all the magic that happens here.
+And by the end of these, couple of lessons, you'll see that it's
+no magic and that it's quite understandable what what they actually do
+in a sense. The output of this stack of transformer
+blocks goes into a neural network called the Language Modeling head.
+Let's look at each of these components.
+We looked at a tokenizer, and we know by now that the tokenizer has a vocabulary
+that breaks down, that has independent chunks.
+Let's say we have this vocabulary of 50,000 tokens that this tokenizer knows.
+The model has associated token embeddings for each of these tokens.
+So if we have 50,000 tokens in our vocabulary,
+the model has 50,000 vectors that represent each of these tokens.
+And these are substituted in the beginning once the model is processing its inputs,
+as we'll see.
+We'll talk about transformer blocks in the next lesson.
+But let's go over the language modeling head
+as we're looking at the high-level overview here.
+So at the very end of the processing of a language model,
+you have all of your tokens
+that you sort of started with that are defined in the tokenizer.
+What happens at the end is a kind of scoring or a token probability calculation
+based on all of the processing that the model in the stack of transformers,
+have done, to make sense of the input context
+and what is requested, let's say, in the prompt
+and what the next token should be in response to that.
+And so the result of the language modeling head is this sort of token
+probability, scoring that says, okay, if all the tokens that I know
+this is how much, percent, of probability, each of these tokens,
+has and all of these, they have to add up to 100%.
+And so if you have the word "dear", scored at 40% probability
+that becomes the highest probability token that becomes, possibly the output,
+not necessarily the outputs, but you can choose the highest probability token.
+And that's one method of choosing the next or the output token.
+These are called decoding strategies.
+If you're choosing the top-scoring token
+all the time, it's a good strategy for a lot of cases.
+It is what happens when you set the temperature parameter to zero.
+It is a method called greedy decoding.
+But it's not the only method out there.
+There are others like Top P for example, that incorporate multiple tokens.
+So it might generate "dear", but it also in some cases
+with lower probability, it might pick the next highest probability token.
+It definitely looks at scoring.
+But it doesn't always have to pick the top one.
+And these are sometimes important to generate text
+that sounds natural.
+And it's sometimes why when you generate
+multiple times using the same prompt, you will get two different, answers.
+That's all,
+related to decoding strategies,
+especially if you set the temperature to values more than zero.
+Another important idea or intuition about transformers,
+and this is one of the ideas that make Transformers operates
+a lot better than previous methods like RNNs, is that they process
+all of their input tokens in parallel, and that parallelization,
+makes it time efficient, let's say, So we can compute,
+a long context on a lot of different GPUs in similar time.
+The way to, envision this is to think of multiple tracks flowing
+through this stack of transformer blocks and the number of tracks
+here is the context size of the model.
+So if a model, for example, has a context size of 16,000 tokens,
+it can process 16,000 tokens at the same time.
+The generated token in decoder
+LLM transformers, is the output of the final token, in the model.
+And we will see in the next slide how generating every other token
+after you start with, let's say the first step
+that processes the input is a little bit different.
+So here you can see that all of these arrows are red.
+But then once we generate our first token, now we feed that entire prompt
+with the token that we've generated into the transformer again.
+So you can think of it as a loop. It is a loop.
+And then where you process the inputs one by one as you generate these tokens,
+one thing that is different between that first step
+and the second step is that you can cache these calculations
+because they're going to be exactly the same calculation.
+And you can catch them to speed up the generation of the model.
+This is what is called KV caching.
+K means keys, V is values.
+We'll talk about these when we talk about attention in the next lessons.
+So that is one of the major, additions to Transformers that make them faster.
+And you can also think about metrics.
+So if you're working with efficiency there's this metric of time
+to first token.
+That is what happens here. So time to first token
+is how long the model takes to process all of this.
+And then generating every other token is slightly a different process.

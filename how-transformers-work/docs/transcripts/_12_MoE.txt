@@ -1,0 +1,158 @@
+An exciting improvement to transformer LLMs.
+It's mixture of experts.
+This technique extends transformers by introducing dynamically chosen experts.
+In this lesson, we will learn its two main components
+the experts and the router.
+Let's take a look.
+Mixture of Experts changes parts of the decoder block inside a transformer model.
+Let's first recap how this decoder block works.
+The input of a decoder
+is typically several factors representing the input
+tokens.
+These are first layer
+normalized before pass to the attention mechanism.
+You apply masked self-attention to the inputs to weight tokens
+based on their relative importance in the context of all other tokens.
+This output is aggregated together with the unprocessed inputs,
+creating both a direct and indirect path.
+This concludes one of the most important components of transformer models.
+It's attention mechanism.
+It prepares the input in such a way that more contextual information
+is stored in the vectors.
+It is then layer normalized
+before processed by a feedforward neural network.
+This network is typically one of the largest components of the an LLM,
+since it attempts to find complex relationships
+in the information processed by the attention mechanism.
+The feedforward neural network takes the inputs
+and processes it through one or more hidden layers.
+This is called a dense network.
+Since all parameters of the network are activated and used,
+at least to some degree.
+Mixture of Experts is a technique
+that relates to the feedforward neural network.
+Instead of a single network, it has several networks
+that it can choose to use.
+Each network is called an expert.
+Note that an expert is not specialized
+in a specific domain like psychology or biology.
+At most, it learns syntactic information on a token level.
+Instead, like punctuation, verbs and conjunctions,
+the single feedforward neural network
+now consists of four networks, each called an expert.
+When the input flows through this expert layer,
+one or more experts is selected that will process the inputs
+and note that this will leave other expert unactivated.
+This is called a sparse model, since only a subset of experts
+is activated at a given time.
+This sparse model
+is often referred to as the Mixture of Experts layer
+or the MoE layer.
+The MoE layer,
+therefore consists of one or more experts each
+a feedforward neural network
+that takes in the input data and selects an
+expert best suited for this particular input.
+To generate the output.
+But how do you know which inputs should go to which expert?
+This is where the router comes in.
+Its main job is to choose which inputs should go to
+which expert like the experts.
+The router is a feedforward neural network itself, but
+quite a bit smaller, since it should do nothing more than route the inputs.
+For each expert,
+The router creates a probability score to indicate how likely it is
+that the expert is suited for that particular input.
+After creating the probability scores one for each expert,
+the router selects the experts based on those scores.
+One strategy is to select the expert with the highest probability.
+But other strategies exist that might introduce
+more creativity to the output.
+The final output can be generated
+based on the output of a single expert,
+or you can choose multiple experts and aggregate their output.
+This aggregation process is typically a weighted mean.
+Experts that were given a higher probability by the router
+end up with a bigger say in the final output.
+The router, together with the experts, are the two main components
+of Mixture of Experts and is what we call the MoE layer.
+Looking back at the decoder,
+you can replace the single network with multiple experts and the router.
+Although the technical implementation can be difficult,
+overfitting on a single expert is a real problem.
+Mixture of Experts can be summarized by these two components.
+A major benefit
+of a mixture of experts are its computational requirements.
+Although having multiple experts rather than a single expert
+seemed like it would only increase the computational requirements,
+it is actually a bit more nuanced than that.
+The parameters of a model using a Mixture of Experts
+can be found in roughly five different places.
+First, the input embeddings.
+Second, the masked self-attention.
+Third, the router.
+Fourth, the experts.
+And fifth, the output embeddings.
+When we load a model, we need to load all parameters.
+These are called the
+sparse parameters as not all of them are used.
+Currently, all experts are loaded despite
+only using one of them.
+In contrast, the active parameters are those
+that are actually used to run inference with Mixture of Experts.
+Not all experts are used.
+Therefore, although you need to load in all parameters of the model,
+only a subset of them are used one or more experts.
+As a result, the amount of memory needed to load in the model is relatively high.
+Due to the multiple experts, but comparatively low during inference.
+Since not all experts are used.
+Let's explore this with an example and calculate the parameters of a model.
+The model that you will be exploring is Mixtral 8x7B.
+It is a mixture of experts model that, as its name
+suggests, has eight experts, each with 7 billion parameters.
+The shared
+parameters of Mixtral are those that are always used
+both when you load the model and when you run inference.
+The largest number of parameters can be found in the attention mechanism.
+With more than a billion parameters.
+Note that the router is a relatively small model
+with only 32,000 parameters.
+Mixed role indeed has eight experts,
+but each expert actually has 5.6
+billion parameters and not the suggested 7 billion.
+Most likely, the authors added the shared parameters to the parameters
+of the experts, which would indeed result in 7 billion parameters.
+It is a bit misleading as the shared parameters
+shouldn't be counted towards the experts, as those are not experts,
+Specific.
+Together, the experts make up
+to 45 billion parameters,
+which is then the majority of the parameters of this model.
+So when you load Mixtral,
+you will load all 46 billion parameters.
+Running the model and performing inference
+requires the shared parameters.
+However, make sure only selects two experts at a given time,
+greatly reducing the parameter count during inference.
+Although the sparse parameters might seem large
+during inference, the model actually uses much fewer resources.
+This makes MoE models excellent when you run them in production.
+There are a number of pros and cons to this architecture,
+although you will need a lot of memory to load the model.
+Running inference requires fewer
+VRAM, and GPUs memory.
+There's also risk of overfitting on a single expert,
+which requires careful balancing of the model.
+However, its performance tends to be higher than traditional models
+as the experts help remove redundancy in computations.
+Finally, this architecture is
+more complex, which requires careful training,
+but also has a flexible architecture,
+in the experts that are chosen and used.
+Moreover, since the MoE layer only affects the feedforward
+neural network and not the attention mechanism,
+non transformer models can also have MoE layers.
+For instance, state space models like Mamba and Jamba
+as an alternative to transformer models also have MoE variance.
+And this makes MoE a very interesting
+and useful architecture to use across the entire LLM space.

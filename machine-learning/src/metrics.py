@@ -2,7 +2,7 @@ import numpy as np
 
 def accuracy_score(y_true, y_pred):
     """
-    Calcula a acurácia de classificação.
+    Computes classification accuracy.
     """
     y_true = np.asarray(y_true)
     y_pred = np.asarray(y_pred)
@@ -11,14 +11,14 @@ def accuracy_score(y_true, y_pred):
 
 def confusion_matrix(y_true, y_pred):
     """
-    Gera a matriz de confusão para problemas multiclasse ou binários.
+    Builds the confusion matrix for binary or multiclass problems.
     """
     y_true = np.asarray(y_true)
     y_pred = np.asarray(y_pred)
     classes = np.unique(np.concatenate([y_true, y_pred]))
     n_classes = len(classes)
     class_to_idx = {c: i for i, c in enumerate(classes)}
-    
+
     cm = np.zeros((n_classes, n_classes), dtype=int)
     for t, p in zip(y_true, y_pred):
         cm[class_to_idx[t], class_to_idx[p]] += 1
@@ -27,11 +27,11 @@ def confusion_matrix(y_true, y_pred):
 
 def precision_score(y_true, y_pred, pos_label=1, average='binary'):
     """
-    Calcula a precisão (precision). Suporta 'binary' e 'macro'.
+    Computes precision. Supports 'binary' and 'macro' averaging.
     """
     y_true = np.asarray(y_true)
     y_pred = np.asarray(y_pred)
-    
+
     if average == 'binary':
         tp = np.sum((y_true == pos_label) & (y_pred == pos_label))
         fp = np.sum((y_true != pos_label) & (y_pred == pos_label))
@@ -48,16 +48,16 @@ def precision_score(y_true, y_pred, pos_label=1, average='binary'):
             precisions.append(prec)
         return np.mean(precisions)
     else:
-        raise ValueError("Apenas as médias 'binary' e 'macro' são suportadas.")
+        raise ValueError("Only the 'binary' and 'macro' averages are supported.")
 
 
 def recall_score(y_true, y_pred, pos_label=1, average='binary'):
     """
-    Calcula a revocação (recall). Suporta 'binary' e 'macro'.
+    Computes recall. Supports 'binary' and 'macro' averaging.
     """
     y_true = np.asarray(y_true)
     y_pred = np.asarray(y_pred)
-    
+
     if average == 'binary':
         tp = np.sum((y_true == pos_label) & (y_pred == pos_label))
         fn = np.sum((y_true == pos_label) & (y_pred != pos_label))
@@ -74,16 +74,16 @@ def recall_score(y_true, y_pred, pos_label=1, average='binary'):
             recalls.append(rec)
         return np.mean(recalls)
     else:
-        raise ValueError("Apenas as médias 'binary' e 'macro' são suportadas.")
+        raise ValueError("Only the 'binary' and 'macro' averages are supported.")
 
 
 def f1_score(y_true, y_pred, pos_label=1, average='binary'):
     """
-    Calcula o F1-score. Suporta 'binary' e 'macro'.
+    Computes the F1-score. Supports 'binary' and 'macro' averaging.
     """
     y_true = np.asarray(y_true)
     y_pred = np.asarray(y_pred)
-    
+
     if average == 'binary':
         p = precision_score(y_true, y_pred, pos_label=pos_label, average='binary')
         r = recall_score(y_true, y_pred, pos_label=pos_label, average='binary')
@@ -100,24 +100,24 @@ def f1_score(y_true, y_pred, pos_label=1, average='binary'):
             f1s.append(f1)
         return np.mean(f1s)
     else:
-        raise ValueError("Apenas as médias 'binary' e 'macro' são suportadas.")
+        raise ValueError("Only the 'binary' and 'macro' averages are supported.")
 
 
 def classification_report(y_true, y_pred):
     """
-    Gera um relatório impresso com as principais métricas de classificação.
+    Builds a printable report with the main classification metrics.
     """
     y_true = np.asarray(y_true)
     y_pred = np.asarray(y_pred)
     classes = np.unique(y_true)
-    report = f"{'classe':>12} {'precision':>12} {'recall':>12} {'f1-score':>12} {'suporte':>12}\n\n"
+    report = f"{'class':>12} {'precision':>12} {'recall':>12} {'f1-score':>12} {'support':>12}\n\n"
     for c in classes:
         p = precision_score(y_true, y_pred, pos_label=c, average='binary')
         r = recall_score(y_true, y_pred, pos_label=c, average='binary')
         f1 = f1_score(y_true, y_pred, pos_label=c, average='binary')
         support = np.sum(y_true == c)
         report += f"{str(c):>12} {p:>12.4f} {r:>12.4f} {f1:>12.4f} {support:>12}\n"
-    
+
     p_macro = precision_score(y_true, y_pred, average='macro')
     r_macro = recall_score(y_true, y_pred, average='macro')
     f1_macro = f1_score(y_true, y_pred, average='macro')
@@ -127,7 +127,7 @@ def classification_report(y_true, y_pred):
 
 def mean_squared_error(y_true, y_pred):
     """
-    Calcula o erro quadrático médio (MSE).
+    Computes the mean squared error (MSE).
     """
     y_true = np.asarray(y_true, dtype=float)
     y_pred = np.asarray(y_pred, dtype=float)
@@ -136,7 +136,7 @@ def mean_squared_error(y_true, y_pred):
 
 def mean_absolute_error(y_true, y_pred):
     """
-    Calcula o erro absoluto médio (MAE).
+    Computes the mean absolute error (MAE).
     """
     y_true = np.asarray(y_true, dtype=float)
     y_pred = np.asarray(y_pred, dtype=float)
@@ -145,7 +145,7 @@ def mean_absolute_error(y_true, y_pred):
 
 def r2_score(y_true, y_pred):
     """
-    Calcula o coeficiente de determinação R² (R-squared).
+    Computes the coefficient of determination R² (R-squared).
     """
     y_true = np.asarray(y_true, dtype=float)
     y_pred = np.asarray(y_pred, dtype=float)

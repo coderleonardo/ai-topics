@@ -3,14 +3,15 @@ import numpy as np
 
 def mean_custom(data):
     """
-    Calcula a média aritmética (1º momento bruto).
+    Computes the arithmetic mean (1st raw moment).
     """
     data = np.asarray(data)
     return np.sum(data) / len(data)
 
 def variance_custom(data, ddof=1):
     """
-    Calcula a variância amostral (ddof=1) ou populacional (ddof=0) (2º momento central).
+    Computes the variance: the unbiased sample estimator (ddof=1, Bessel's
+    correction) by default, or the population 2nd central moment (ddof=0).
     """
     data = np.asarray(data)
     mu = mean_custom(data)
@@ -18,73 +19,74 @@ def variance_custom(data, ddof=1):
 
 def std_dev_custom(data, ddof=1):
     """
-    Calcula o desvio padrão.
+    Computes the standard deviation.
     """
     return np.sqrt(variance_custom(data, ddof))
 
 def skewness_custom(data):
     """
-    Calcula a assimetria (skewness) da distribuição (3º momento central padronizado).
+    Computes the skewness of the distribution (standardized 3rd central moment).
     """
     data = np.asarray(data)
     mu = mean_custom(data)
-    sigma = np.std(data, ddof=0) # Desvio padrão populacional para momentos centrais
+    sigma = np.std(data, ddof=0)  # population standard deviation, used for central moments
     if sigma == 0.0:
         return 0.0
     return np.mean(((data - mu) / sigma) ** 3)
 
 def kurtosis_custom(data):
     """
-    Calcula a curtose (kurtosis) bruta da distribuição (4º momento central padronizado).
-    Para uma distribuição normal, o valor teórico é 3.0.
+    Computes the raw kurtosis of the distribution (standardized 4th central
+    moment, not excess kurtosis). For a normal distribution, the theoretical
+    value is 3.0 (excess kurtosis = raw kurtosis - 3).
     """
     data = np.asarray(data)
     mu = mean_custom(data)
-    sigma = np.std(data, ddof=0) # Desvio padrão populacional para momentos centrais
+    sigma = np.std(data, ddof=0)  # population standard deviation, used for central moments
     if sigma == 0.0:
         return 0.0
     return np.mean(((data - mu) / sigma) ** 4)
 
 def binomial_pmf(k, n, p):
     """
-    Função de Massa de Probabilidade (PMF) da distribuição Binomial.
-    Mede a probabilidade de k sucessos em n tentativas com probabilidade p de sucesso.
+    Probability Mass Function (PMF) of the Binomial distribution.
+    Measures the probability of k successes in n trials with success probability p.
     """
     if k < 0 or k > n:
         return 0.0
     if not (0.0 <= p <= 1.0):
-        raise ValueError("A probabilidade p deve estar no intervalo [0, 1]")
+        raise ValueError("Probability p must be in the [0, 1] interval")
     comb = math.comb(n, k)
     return comb * (p ** k) * ((1.0 - p) ** (n - k))
 
 def poisson_pmf(k, lam):
     """
-    Função de Massa de Probabilidade (PMF) da distribuição de Poisson.
-    Mede a probabilidade de k eventos num intervalo fixo com taxa média lam.
+    Probability Mass Function (PMF) of the Poisson distribution.
+    Measures the probability of k events in a fixed interval with mean rate lam.
     """
     if k < 0:
         return 0.0
     if lam <= 0.0:
-        raise ValueError("O parâmetro lambda (taxa) deve ser positivo")
+        raise ValueError("The lambda (rate) parameter must be positive")
     return (math.exp(-lam) * (lam ** k)) / math.factorial(k)
 
 def normal_pdf(x, mu, sigma):
     """
-    Função Densidade de Probabilidade (PDF) da distribuição Normal (Gaussiana).
+    Probability Density Function (PDF) of the Normal (Gaussian) distribution.
     """
     if sigma <= 0.0:
-        raise ValueError("O desvio padrão sigma deve ser estritamente positivo")
+        raise ValueError("The standard deviation sigma must be strictly positive")
     coef = 1.0 / (sigma * math.sqrt(2.0 * math.pi))
     exponent = math.exp(-((x - mu) ** 2) / (2.0 * (sigma ** 2)))
     return coef * exponent
 
 def fit_normal_mle(data):
     """
-    Estima os parâmetros mu e sigma de uma distribuição Gaussiana dados os dados
-    usando o Estimador de Máxima Verossimilhança (MLE).
+    Estimates the mu and sigma parameters of a Gaussian distribution from the
+    data using Maximum Likelihood Estimation (MLE).
     """
     data = np.asarray(data)
     mu = mean_custom(data)
-    # O estimador de máxima verossimilhança de variância é enviesado (dividido por n, ddof=0)
+    # The maximum-likelihood variance estimator is biased (divided by n, ddof=0)
     sigma = np.std(data, ddof=0)
     return mu, sigma

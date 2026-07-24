@@ -1,4 +1,4 @@
-# Package entry point for machine learning from scratch.
+# Package entry point for "machine learning from scratch".
 
 from .preprocessing import (
     MinMaxScaler,
@@ -30,9 +30,9 @@ from .linear_models import (
     CustomLinearRegression,
     CustomRidgeRegression,
     CustomLassoRegression,
-    teste_utilidade_regressao,
-    estimativa_variancia,
-    analise_qualidade_regressao
+    regression_significance_test,
+    variance_estimate,
+    regression_quality_analysis
 )
 
 from .svm import (
@@ -53,8 +53,8 @@ from .clustering import (
 from .dimensionality_reduction import (
     CustomPCA,
     CustomSVD,
-    pca_manual,
-    svd_estavel_truncada
+    pca_from_scratch,
+    truncated_svd_stable
 )
 
 from .metrics import (

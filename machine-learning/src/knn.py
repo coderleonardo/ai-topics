@@ -2,14 +2,14 @@ import numpy as np
 
 def distance(x, y, metric="euclidean", p=2):
     """
-    Calcula a distância entre dois vetores de mesma dimensão.
-    Suporta as métricas: 'manhattan', 'euclidean', 'chebyshev' e 'minkowski'.
+    Computes the distance between two vectors of the same dimension.
+    Supports the metrics: 'manhattan', 'euclidean', 'chebyshev' and 'minkowski'.
     """
     x = np.asarray(x)
     y = np.asarray(y)
     if x.shape != y.shape:
         raise ValueError("Error: vectors lengths or shapes are not equal")
-        
+
     if metric == "manhattan":
         return np.sum(np.abs(x - y))
     elif metric == "euclidean":
@@ -19,16 +19,16 @@ def distance(x, y, metric="euclidean", p=2):
     elif metric == "minkowski":
         return np.sum(np.abs(x - y) ** p) ** (1.0 / p)
     else:
-        raise ValueError(f"Métrica desconhecida: {metric}")
+        raise ValueError(f"Unknown metric: {metric}")
 
 def mode(values):
     """
-    Retorna o elemento mais frequente de uma lista/array. 
-    Serve como critério de desempate retornar o primeiro que atinge o máximo.
+    Returns the most frequent element of a list/array.
+    Ties are broken by returning the first value that reaches the maximum count.
     """
     values = list(values)
     if len(values) == 0:
-        raise ValueError("Não é possível computar a moda de uma lista vazia")
+        raise ValueError("Cannot compute the mode of an empty list")
     frequency = {}
     for item in values:
         frequency[item] = frequency.get(item, 0) + 1
@@ -38,13 +38,13 @@ def mode(values):
 
 def agg_mean(values):
     """
-    Média aritmética para regressão.
+    Arithmetic mean, used as the default regression aggregator.
     """
     return np.mean(values)
 
 class KNNClassifier:
     """
-    Classificador k-Nearest Neighbors (k-NN) implementado do zero.
+    k-Nearest Neighbors (k-NN) classifier implemented from scratch.
     """
     def __init__(self, k=3, metric="euclidean", p=2):
         self.k = k
@@ -81,7 +81,7 @@ class KNNClassifier:
 
 class KNNRegressor:
     """
-    Regressor k-Nearest Neighbors (k-NN) implementado do zero.
+    k-Nearest Neighbors (k-NN) regressor implemented from scratch.
     """
     def __init__(self, k=3, metric="euclidean", p=2, agg_func=agg_mean):
         self.k = k

@@ -3,8 +3,8 @@ from scipy import stats
 
 class CustomLeastSquares:
     """
-    Solucionador analítico de Mínimos Quadrados Ordinários (OLS) via Equação Normal.
-    Resolve o sistema A^T * A * x = A^T * b.
+    Analytical Ordinary Least Squares (OLS) solver via the Normal Equation.
+    Solves the system A^T * A * x = A^T * b.
     """
     @staticmethod
     def solve(A, b):
@@ -17,7 +17,7 @@ class CustomLeastSquares:
 
 class CustomLinearRegression:
     """
-    Regressão Linear Múltipla ajustada por Mínimos Quadrados Ordinários (OLS) do zero.
+    Multiple Linear Regression fitted by Ordinary Least Squares (OLS) from scratch.
     """
     def __init__(self, fit_intercept=True):
         self.fit_intercept = fit_intercept
@@ -32,7 +32,7 @@ class CustomLinearRegression:
         
         n_samples = X.shape[0]
         if self.fit_intercept:
-            # Adiciona coluna de 1s para o intercepto
+            # Add a column of 1s for the intercept
             A = np.hstack([np.ones((n_samples, 1)), X])
             weights = CustomLeastSquares.solve(A, y)
             self.intercept_ = weights[0]
@@ -51,8 +51,8 @@ class CustomLinearRegression:
 
 class CustomRidgeRegression:
     """
-    Regressão Ridge (regularização L2) implementada analiticamente do zero.
-    Minimiza: ||y - Xw - w0||^2_2 + alpha * ||w||^2_2
+    Ridge Regression (L2 regularization) implemented analytically from scratch.
+    Minimizes: ||y - Xw - w0||^2_2 + alpha * ||w||^2_2
     """
     def __init__(self, alpha=1.0, fit_intercept=True):
         self.alpha = alpha
@@ -80,6 +80,8 @@ class CustomRidgeRegression:
             y_offset = y.copy()
 
         # (X_offset.T @ X_offset + alpha * I) @ w = X_offset.T @ y_offset
+        # Centering X and y lets the intercept be recovered afterwards without
+        # regularizing it directly, matching the standard Ridge formulation.
         A = X_offset.T @ X_offset + self.alpha * np.eye(n_features)
         b = X_offset.T @ y_offset
         self.coef_ = np.linalg.solve(A, b)
@@ -99,8 +101,8 @@ class CustomRidgeRegression:
 
 class CustomLassoRegression:
     """
-    Regressão Lasso (regularização L1) via Coordinate Descent do zero.
-    Minimiza: 0.5 * ||y - Xw - w0||^2_2 + alpha * ||w||_1
+    Lasso Regression (L1 regularization) via Coordinate Descent, from scratch.
+    Minimizes: 0.5 * ||y - Xw - w0||^2_2 + alpha * ||w||_1
     """
     def __init__(self, alpha=1.0, max_iter=1000, tol=1e-4, fit_intercept=True):
         self.alpha = alpha
@@ -129,20 +131,20 @@ class CustomLassoRegression:
             X_offset = X.copy()
             y_offset = y.copy()
 
-        # Inicialização do vetor de pesos w
+        # Initialize the weight vector w
         w = np.zeros(n_features)
         cols_sq_sum = np.sum(X_offset ** 2, axis=0)
-        # Evita divisão por zero
+        # Avoid division by zero
         cols_sq_sum[cols_sq_sum == 0.0] = 1.0
 
         for it in range(self.max_iter):
             w_old = w.copy()
             for j in range(n_features):
-                # Resíduo excluindo a contribuição da feature j
+                # Residual excluding feature j's contribution
                 r = y_offset - (X_offset @ w) + w[j] * X_offset[:, j]
                 rho_j = np.sum(X_offset[:, j] * r)
-                
-                # Operador Soft-Thresholding: sign(rho_j) * max(0, |rho_j| - alpha)
+
+                # Soft-thresholding operator: sign(rho_j) * max(0, |rho_j| - alpha)
                 soft_val = np.sign(rho_j) * max(0.0, abs(rho_j) - self.alpha)
                 w[j] = soft_val / cols_sq_sum[j]
                 
@@ -163,41 +165,41 @@ class CustomLassoRegression:
         return X @ self.coef_ + self.intercept_
 
 
-# --- Funções de Diagnóstico e Qualidade de Regressão Simples ---
+# --- Simple Regression Diagnostics and Goodness-of-Fit Functions ---
 
-def teste_utilidade_regressao(X, Y, alpha=0.05):
+def regression_significance_test(X, Y, alpha=0.05):
     """
-    Testa a hipótese H0: beta_1 = 0 contra H1: beta_1 != 0 para regressão simples.
+    Tests the hypothesis H0: beta_1 = 0 against H1: beta_1 != 0 for simple regression.
     """
     n = len(X)
     X = np.asarray(X)
     Y = np.asarray(Y)
 
-    # Coeficientes OLS
+    # OLS coefficients
     A = np.hstack([np.ones((n, 1)), X.reshape(-1, 1)])
     weights = CustomLeastSquares.solve(A, Y)
     beta_0, beta_1 = weights[0], weights[1]
 
-    # Previsões e variância residual
+    # Predictions and residual variance
     Y_hat = beta_0 + beta_1 * X
     sigma2_hat = np.sum((Y - Y_hat)**2) / (n - 2)
 
-    # Erro padrão de beta_1
+    # Standard error of beta_1
     Sxx = np.sum((X - np.mean(X))**2)
     if Sxx == 0:
         Sxx = 1e-10
-    EP_beta_1 = np.sqrt(sigma2_hat / Sxx)
+    SE_beta_1 = np.sqrt(sigma2_hat / Sxx)
 
-    # Estatística t e valor-p bicaudal
-    t_stat = beta_1 / EP_beta_1
+    # t statistic and two-tailed p-value
+    t_stat = beta_1 / SE_beta_1
     p_value = 2 * stats.t.sf(np.abs(t_stat), df=n - 2)
 
-    return beta_0, beta_1, EP_beta_1, t_stat, p_value
+    return beta_0, beta_1, SE_beta_1, t_stat, p_value
 
 
-def estimativa_variancia(X, Y):
+def variance_estimate(X, Y):
     """
-    Estima a variância residual e o desvio padrão residual para uma regressão simples.
+    Estimates the residual variance and residual standard deviation for a simple regression.
     """
     n = len(X)
     X = np.asarray(X)
@@ -208,16 +210,16 @@ def estimativa_variancia(X, Y):
     beta_0, beta_1 = weights[0], weights[1]
 
     Y_hat = beta_0 + beta_1 * X
-    SQE = np.sum((Y - Y_hat)**2)
-    sigma2_hat = SQE / (n - 2)
+    SSE = np.sum((Y - Y_hat)**2)
+    sigma2_hat = SSE / (n - 2)
     sigma_hat = np.sqrt(sigma2_hat)
 
-    return beta_0, beta_1, SQE, sigma2_hat, sigma_hat
+    return beta_0, beta_1, SSE, sigma2_hat, sigma_hat
 
 
-def analise_qualidade_regressao(X, Y):
+def regression_quality_analysis(X, Y):
     """
-    Executa a análise de variância da regressão simples, calculando SQE, STQT, SQR e R².
+    Runs the analysis of variance for simple regression, computing SSE, SST, SSR and R².
     """
     n = len(X)
     X = np.asarray(X)
@@ -230,13 +232,13 @@ def analise_qualidade_regressao(X, Y):
     Y_hat = beta_0 + beta_1 * X
     Y_bar = np.mean(Y)
 
-    SQE = np.sum((Y - Y_hat)**2)
-    STQT = np.sum((Y - Y_bar)**2)
-    SQR = STQT - SQE
-    
-    if STQT == 0.0:
+    SSE = np.sum((Y - Y_hat)**2)
+    SST = np.sum((Y - Y_bar)**2)
+    SSR = SST - SSE
+
+    if SST == 0.0:
         R2 = 1.0
     else:
-        R2 = SQR / STQT
+        R2 = SSR / SST
 
-    return beta_0, beta_1, SQE, STQT, SQR, R2
+    return beta_0, beta_1, SSE, SST, SSR, R2

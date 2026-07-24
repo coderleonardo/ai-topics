@@ -3,7 +3,7 @@ import cvxpy as cp
 
 def rbf_kernel(X1, X2, gamma=1.0):
     """
-    Calcula a matriz de kernel RBF (Gaussiano) entre X1 e X2.
+    Computes the RBF (Gaussian) kernel matrix between X1 and X2.
     """
     X1 = np.atleast_2d(X1)
     X2 = np.atleast_2d(X2)
@@ -15,8 +15,8 @@ def rbf_kernel(X1, X2, gamma=1.0):
 
 class CustomSVM_Dual:
     """
-    Máquina de Vetores de Suporte (SVM) para classificação binária.
-    Resolve a formulação dual convexa via cvxpy.
+    Support Vector Machine (SVM) for binary classification.
+    Solves the convex dual formulation via cvxpy.
     """
     def __init__(self, C=1.0, kernel='rbf', gamma=1.0):
         self.C = C
@@ -34,7 +34,7 @@ class CustomSVM_Dual:
         elif self.kernel == 'rbf':
             return rbf_kernel(X1, X2, self.gamma)
         else:
-            raise ValueError(f"Kernel desconhecido: {self.kernel}")
+            raise ValueError(f"Unknown kernel: {self.kernel}")
 
     def fit(self, X, y):
         X = np.asarray(X, dtype=float)
@@ -45,28 +45,28 @@ class CustomSVM_Dual:
         Q = np.outer(y, y) * K
 
         alpha = cp.Variable(n_samples)
-        # Minimiza 0.5 * alpha^T * Q * alpha - sum(alpha)
+        # Minimize 0.5 * alpha^T * Q * alpha - sum(alpha)
         objective = cp.Minimize(0.5 * cp.quad_form(alpha, cp.psd_wrap(Q)) - cp.sum(alpha))
         constraints = [
             alpha >= 0.0,
             alpha <= self.C,
             cp.sum(cp.multiply(alpha, y)) == 0.0
         ]
-        
+
         prob = cp.Problem(objective, constraints)
         prob.solve()
 
         self.alpha_ = alpha.value
         if self.alpha_ is None:
-            raise RuntimeError("O solver do cvxpy não conseguiu convergir para a SVM Dual.")
+            raise RuntimeError("The cvxpy solver failed to converge for the dual SVM.")
 
-        # Identificar vetores de suporte (alfa > threshold)
+        # Identify support vectors (alpha > threshold)
         sv_idx = np.where(self.alpha_ > 1e-5)[0]
         self.support_vectors_ = X[sv_idx]
         self.support_vector_labels_ = y[sv_idx]
         self.support_vector_alphas_ = self.alpha_[sv_idx]
 
-        # Calcular o bias (b) usando pontos que estão na margem (0 < alfa < C)
+        # Compute the bias (b) using points that lie on the margin (0 < alpha < C)
         inside_margin = (self.alpha_ > 1e-5) & (self.alpha_ < self.C - 1e-5)
         inside_idx = np.where(inside_margin)[0]
 
@@ -107,8 +107,8 @@ class CustomSVM_Dual:
 
 class CustomSVR_Dual:
     """
-    Support Vector Regression (SVR) com margem suave e perda epsilon-insensível.
-    Resolve a formulação dual convexa via cvxpy.
+    Support Vector Regression (SVR) with soft margin and epsilon-insensitive loss.
+    Solves the convex dual formulation via cvxpy.
     """
     def __init__(self, C=1.0, epsilon=0.1, kernel='rbf', gamma=1.0):
         self.C = C
@@ -127,7 +127,7 @@ class CustomSVR_Dual:
         elif self.kernel == 'rbf':
             return rbf_kernel(X1, X2, self.gamma)
         else:
-            raise ValueError(f"Kernel desconhecido: {self.kernel}")
+            raise ValueError(f"Unknown kernel: {self.kernel}")
 
     def fit(self, X, y):
         X = np.asarray(X, dtype=float)
@@ -140,7 +140,7 @@ class CustomSVR_Dual:
         alpha_star = cp.Variable(n_samples)
         alpha_diff = alpha - alpha_star
 
-        # Maximizar no Dual equivale a Minimizar o oposto:
+        # Maximizing the dual is equivalent to minimizing its negation:
         # Minimize: 0.5 * (alpha - alpha_star)^T * K * (alpha - alpha_star) + epsilon * sum(alpha + alpha_star) - sum(y * (alpha - alpha_star))
         objective = cp.Minimize(
             0.5 * cp.quad_form(alpha_diff, cp.psd_wrap(K)) +
@@ -161,14 +161,14 @@ class CustomSVR_Dual:
         self.alpha_ = alpha.value
         self.alpha_star_ = alpha_star.value
         if self.alpha_ is None or self.alpha_star_ is None:
-            raise RuntimeError("O solver do cvxpy não conseguiu convergir para o SVR Dual.")
+            raise RuntimeError("The cvxpy solver failed to converge for the dual SVR.")
 
         alpha_diff_val = self.alpha_ - self.alpha_star_
         sv_idx = np.where(np.abs(alpha_diff_val) > 1e-5)[0]
         self.support_vectors_ = X[sv_idx]
         self.support_vector_diffs_ = alpha_diff_val[sv_idx]
 
-        # Calcular o bias (b) usando pontos que violam a margem mas são limitados
+        # Compute the bias (b) using points that violate the margin but stay bounded
         inside_margin = ((self.alpha_ > 1e-5) & (self.alpha_ < self.C - 1e-5)) | \
                         ((self.alpha_star_ > 1e-5) & (self.alpha_star_ < self.C - 1e-5))
         inside_idx = np.where(inside_margin)[0]
@@ -206,7 +206,7 @@ class CustomSVR_Dual:
 
 class CustomSVM_Multiclass:
     """
-    Wrapper para SVM Multiclasse usando a estratégia One-vs-Rest (OvR).
+    Wrapper for multiclass SVM using the One-vs-Rest (OvR) strategy.
     """
     def __init__(self, C=1.0, kernel='rbf', gamma=1.0):
         self.C = C
@@ -244,8 +244,8 @@ class CustomSVM_Multiclass:
 
 class CustomOneClassSVM:
     """
-    One-Class SVM para detecção de anomalias.
-    Maximiza a separação dos dados normais em relação à origem no espaço do Kernel.
+    One-Class SVM for anomaly detection.
+    Maximizes the separation of normal data from the origin in kernel space.
     """
     def __init__(self, nu=0.05, kernel='rbf', gamma=1.0):
         self.nu = nu
@@ -262,7 +262,7 @@ class CustomOneClassSVM:
         elif self.kernel == 'rbf':
             return rbf_kernel(X1, X2, self.gamma)
         else:
-            raise ValueError(f"Kernel desconhecido: {self.kernel}")
+            raise ValueError(f"Unknown kernel: {self.kernel}")
 
     def fit(self, X):
         X = np.asarray(X, dtype=float)
@@ -273,7 +273,7 @@ class CustomOneClassSVM:
         alpha = cp.Variable(n_samples)
         limit = 1.0 / (self.nu * n_samples)
 
-        # Minimiza 0.5 * alpha^T * K * alpha
+        # Minimize 0.5 * alpha^T * K * alpha
         objective = cp.Minimize(0.5 * cp.quad_form(alpha, cp.psd_wrap(K)))
         constraints = [
             alpha >= 0.0,
@@ -286,13 +286,13 @@ class CustomOneClassSVM:
 
         self.alpha_ = alpha.value
         if self.alpha_ is None:
-            raise RuntimeError("O solver do cvxpy não conseguiu convergir para a One-Class SVM.")
+            raise RuntimeError("The cvxpy solver failed to converge for the One-Class SVM.")
 
         sv_idx = np.where(self.alpha_ > 1e-5)[0]
         self.support_vectors_ = X[sv_idx]
         self.support_vector_alphas_ = self.alpha_[sv_idx]
 
-        # Calcular rho usando pontos de suporte que não estão no limite superior
+        # Compute rho using support vectors that are not at the upper bound
         inside_margin = (self.alpha_ > 1e-5) & (self.alpha_ < limit - 1e-5)
         inside_idx = np.where(inside_margin)[0]
 
@@ -319,7 +319,7 @@ class CustomOneClassSVM:
         X = np.asarray(X)
         is_1d = X.ndim == 1
         scores = self.decision_function(X)
-        # Retorna 1 para instâncias normais (>= 0) e -1 para anomalias (< 0)
+        # Returns 1 for normal instances (>= 0) and -1 for anomalies (< 0)
         preds = np.where(scores >= 0.0, 1, -1)
         if is_1d:
             return preds[0]

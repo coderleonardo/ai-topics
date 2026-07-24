@@ -1,54 +1,55 @@
 import numpy as np
 
-def pca_manual(X, k):
+def pca_from_scratch(X, k):
     """
-    Função auxiliar para PCA manual baseada nos dados (n_amostras, n_atributos).
+    Helper function for manual PCA on data shaped (n_samples, n_features).
     """
     X_arr = np.asarray(X, dtype=float)
-    # Centraliza os dados
+    # Center the data
     X_centered = X_arr - np.mean(X_arr, axis=0)
-    # Matriz de covariância
+    # Covariance matrix
     cov_X = np.dot(X_centered.T, X_centered) / (X_arr.shape[0] - 1)
-    # Autovalores e autovetores
+    # Eigenvalues and eigenvectors
     D, U = np.linalg.eigh(cov_X)
-    
-    # Ordenar decrescentemente
+
+    # Sort in descending order
     idx = np.argsort(D)[::-1]
     D = D[idx]
     U = U[:, idx]
-    
-    # Projeção
+
+    # Projection
     Yk = np.dot(X_centered, U[:, :k])
-    
-    # Razão da variância explicada
+
+    # Explained variance ratio
     v = D / np.sum(D)
     return Yk, v[:k]
 
 
-def svd_estavel_truncada(A, k):
+def truncated_svd_stable(A, k):
     """
-    SVD estável truncada do zero. Retorna U_k, Sigma_k, V_k e a reconstrução A_k.
+    Numerically stable truncated SVD, from scratch. Returns U_k, Sigma_k, V_k
+    and the rank-k reconstruction A_k.
     """
     A = np.asarray(A, dtype=float)
-    # Autovalores/autovetores de A^T @ A para V
+    # Eigenvalues/eigenvectors of A^T @ A for V
     ATA = np.dot(A.T, A)
     eigvals_V, V_full = np.linalg.eigh(ATA)
 
-    # Ordenar autovalores decrescentemente
+    # Sort eigenvalues in descending order
     idx = np.argsort(eigvals_V)[::-1]
     eigvals_V = eigvals_V[idx]
     V_full = V_full[:, idx]
 
-    # Selecionar os k maiores valores singulares
+    # Select the k largest singular values
     singular_values = np.sqrt(np.maximum(eigvals_V[:k], 0.0))
     Sigma_k = np.diag(singular_values)
     V_k = V_full[:, :k]
 
-    # Calcular U de forma estável (evitando divisão por zero)
+    # Compute U in a numerically stable way (avoiding division by zero)
     inv_Sigma_k = np.linalg.inv(Sigma_k)
     U_k = np.dot(np.dot(A, V_k), inv_Sigma_k)
 
-    # Reconstrução
+    # Reconstruction
     A_k = np.dot(np.dot(U_k, Sigma_k), V_k.T)
 
     return U_k, Sigma_k, V_k, A_k
@@ -56,8 +57,8 @@ def svd_estavel_truncada(A, k):
 
 class CustomPCA:
     """
-    Classe personalizada de Análise de Componentes Principais (PCA).
-    Compatível com o estilo scikit-learn.
+    Custom Principal Component Analysis (PCA) class.
+    Compatible with the scikit-learn style.
     """
     def __init__(self, n_components=2):
         self.n_components = n_components
@@ -69,29 +70,29 @@ class CustomPCA:
     def fit(self, X):
         X = np.asarray(X, dtype=float)
         n_samples, n_features = X.shape
-        
-        # Centralizar os dados
+
+        # Center the data
         self.mean_ = np.mean(X, axis=0)
         X_centered = X - self.mean_
-        
-        # Covariância amostral
+
+        # Sample covariance
         cov_matrix = np.dot(X_centered.T, X_centered) / (n_samples - 1)
-        
-        # Decomposição dos autovalores
+
+        # Eigendecomposition
         eigenvalues, eigenvectors = np.linalg.eigh(cov_matrix)
-        
-        # Ordenar decrescentemente
+
+        # Sort in descending order
         idx = np.argsort(eigenvalues)[::-1]
         eigenvalues = eigenvalues[idx]
         eigenvectors = eigenvectors[:, idx]
-        
-        # Componentes principais
+
+        # Principal components
         self.components_ = eigenvectors[:, :self.n_components].T
         self.explained_variance_ = eigenvalues[:self.n_components]
-        
+
         total_variance = np.sum(eigenvalues)
         self.explained_variance_ratio_ = eigenvalues[:self.n_components] / total_variance
-        
+
         return self
 
     def transform(self, X):
@@ -106,8 +107,8 @@ class CustomPCA:
 
 class CustomSVD:
     """
-    Classe personalizada de Decomposição em Valores Singulares Truncada (SVD).
-    Compatível com o estilo scikit-learn.
+    Custom Truncated Singular Value Decomposition (SVD) class.
+    Compatible with the scikit-learn style.
     """
     def __init__(self, n_components=2):
         self.n_components = n_components
@@ -118,11 +119,11 @@ class CustomSVD:
         X = np.asarray(X, dtype=float)
         ATA = np.dot(X.T, X)
         eigvals_V, V_full = np.linalg.eigh(ATA)
-        
+
         idx = np.argsort(eigvals_V)[::-1]
         eigvals_V = eigvals_V[idx]
         V_full = V_full[:, idx]
-        
+
         self.singular_values_ = np.sqrt(np.maximum(eigvals_V[:self.n_components], 0.0))
         self.components_ = V_full[:, :self.n_components].T
         return self

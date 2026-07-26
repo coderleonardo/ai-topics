@@ -1,0 +1,5 @@
+# Generated audit output (created by skill-manager/scripts/audit_skills.sh)
+skills_audit_package_*
+
+# Personal/local agent settings — never commit these
+.claude/settings.local.json

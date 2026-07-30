@@ -221,3 +221,7 @@ Exercise_*
 # Additional folders and files
 *skills_audit_package*
 how-transformers-work/.last_session.txt
+
+# Local, untracked reference material (e.g. saved source articles/pages)
+.notes-reference/
+*/notes-reference/*

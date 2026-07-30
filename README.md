@@ -12,6 +12,8 @@ Each top-level folder is a self-contained topic with its own notebooks/docs/code
 
 - **[`aws-genAI-with-bedrock/`](./aws-genAI-with-bedrock)** — Notes on building generative AI applications with Amazon Bedrock: foundation models, the Bedrock Runtime API, Knowledge Bases (RAG), Prompt Management, the Converse API (incl. tool use), and Bedrock Flows.
 
+- **[`data-drift/`](./data-drift)** — Data drift in ML: what it is, how it differs from concept drift, prediction drift, training-serving skew, data quality, and outliers, and four hands-on techniques for detecting it (summary statistics, statistical tests, distance metrics, rule-based checks), each run against a shared synthetic dataset.
+
 - **[`how-transformers-work/`](./how-transformers-work)** — From-scratch notes and notebooks on transformer internals: language representations, tokenization, self-attention (Q/K/V, multi-head), Mixture of Experts, a real model walkthrough (Phi-3), and a full transformer block computed by hand.
 
 - **[`langgraph-workshop/`](./langgraph-workshop)** — A multimodal agent workshop built with LangGraph: graphs/state/tools/ReAct, short- and long-term memory (checkpointers, RAG), speech-to-text, text-to-speech, vision, image generation, and a full Telegram bot tying it all together.

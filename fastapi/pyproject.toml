@@ -1,0 +1,63 @@
+[project]
+name = "fastapi-course"
+version = "0.1.0"
+description = ""
+readme = "README.md"
+authors = [
+    { name = "coderleo", email = "coderleonardo@gmail.com" }
+]
+requires-python = ">=3.12, <4.0"
+dependencies = [
+    "fastapi[standard]>=0.141.1",
+]
+
+[project.scripts]
+fastapi-course = "fastapi_course:main"
+
+[dependency-groups]
+dev = [
+    "poethepoet>=0.48.0",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.16.1",
+    "typos>=1.48.0",
+]
+
+[tool.ruff]
+line-length = 79
+extend-exclude = ['migrations']
+
+[tool.ruff.lint]
+preview = true
+select = ['I', 'F', 'E', 'W', 'PL', 'PT']
+
+[tool.ruff.format]
+preview = true
+
+[tool.pytest.ini_options]
+pythonpath = ['.']
+addopts = ['-p', 'no:warnings', '--cov=src/fastapi_course', '--cov-context=test']
+# something like "pytest -p no:warnings --cov=src/fastapi_course --cov-context=test"
+
+[tool.typos.files]
+extend-exclude = ["*.md"]
+
+[tool.poe]
+executor.type = "uv"
+
+[tool.poe.tasks]
+lint = { cmd = "ruff check" }
+format.sequence = [
+    { cmd = "ruff check --fix" }, 
+    { cmd = "ruff format" },
+]
+serve = "uv run fastapi dev src/fastapi_course/_00_env_settup/app.py"
+test.sequence = [
+    "lint", 
+    { cmd = "pytest -s -x -vv $POE_EXTRA_ARGS" }, 
+    { cmd = "coverage html --show-contexts" },
+]
+
+[build-system]
+requires = ["uv_build>=0.12.1,<0.13.0"]
+build-backend = "uv_build"

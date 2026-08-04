@@ -12,7 +12,7 @@ dependencies = [
 ]
 
 [project.scripts]
-fastapi-course = "fastapi_course:main"
+fastapi-course = "project:main"
 
 [dependency-groups]
 dev = [
@@ -36,8 +36,8 @@ preview = true
 
 [tool.pytest.ini_options]
 pythonpath = ['.']
-addopts = ['-p', 'no:warnings', '--cov=src/fastapi_course', '--cov-context=test']
-# something like "pytest -p no:warnings --cov=src/fastapi_course --cov-context=test"
+addopts = ['-p', 'no:warnings', '--cov=src/project', '--cov-context=test']
+# something like "pytest -p no:warnings --cov=src/project --cov-context=test"
 
 [tool.typos.files]
 extend-exclude = ["*.md"]
@@ -51,12 +51,15 @@ format.sequence = [
     { cmd = "ruff check --fix" }, 
     { cmd = "ruff format" },
 ]
-serve = "uv run fastapi dev src/fastapi_course/_00_env_settup/app.py"
+serve = "uv run fastapi dev src/project/env_settup/app.py"
 test.sequence = [
     "lint", 
     { cmd = "pytest -s -x -vv $POE_EXTRA_ARGS" }, 
     { cmd = "coverage html --show-contexts" },
 ]
+
+[tool.uv.build-backend]
+module-name = "project"
 
 [build-system]
 requires = ["uv_build>=0.12.1,<0.13.0"]

@@ -79,3 +79,8 @@ Test structure used in `tests/`:
 - **Arrange**: set up the object under test
 - **Act**: exercise it (the SUT — system under test)
 - **Assert**: check the result
+
+## References
+
+- [Conventional Commits](https://www.conventionalcommits.org/pt-br/v1.0.0/) — a convention for commit messages (`feat:`, `fix:`, `docs:`, ...) that makes the history readable and allows changelogs and version bumps to be generated automatically.
+- [Semantic Versioning](https://semver.org/lang/pt-BR/) — the `MAJOR.MINOR.PATCH` scheme used in `version` at `pyproject.toml`: MAJOR breaks compatibility, MINOR adds features, PATCH fixes bugs.

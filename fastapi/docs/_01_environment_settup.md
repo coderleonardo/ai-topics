@@ -21,7 +21,7 @@ See more in https://docs.astral.sh/uv/guides/projects/#creating-a-new-project
 
 ## 3. Running the app
 
-Start fastapi in development mode:
+Start FastAPI in development mode:
 
 ```bash
 uv run fastapi dev src/project/env_settup/app.py
@@ -33,7 +33,7 @@ The app is served at `http://127.0.0.1:8000`:
 - `127.0.0.1`: IP used
 - `8000`: reserved port to the application (in our machine)
 
-Note that fastAPI uses `uvicorn` to act as a server to disponibilize the fastAPI app to the network.
+Note that FastAPI uses `uvicorn` to act as a server to serve the FastAPI app to the network.
 
 ## 4. Development tools
 
@@ -43,8 +43,8 @@ uv add --group dev pytest pytest-cov ruff typos poethepoet
 
 ### ruff
 
-1. check python programm good practices (linter)
-2. formatter: pre-define a style python code to be followed
+1. checks Python program good practices (linter)
+2. formatter: pre-defines a Python code style to be followed
 
 ### poe the poet
 
